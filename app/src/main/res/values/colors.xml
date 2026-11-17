@@ -1,0 +1,12 @@
+<resources>
+    <color name="bg">#FFFFFF</color>
+    <color name="text">#37352F</color>
+    <color name="text_secondary">#787774</color>
+    <color name="text_faint">#B4B3AF</color>
+    <color name="hover">#F1F1EF</color>
+    <color name="divider">#E9E9E7</color>
+    <color name="code_bg">#F2F1EE</color>
+    <color name="code_text">#EB5757</color>
+    <color name="accent">#2383E2</color>
+    <color name="banner_bg">#FBF3DB</color>
+</resources>

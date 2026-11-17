@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Live Note</string>
+    <string name="title_hint">Senza titolo</string>
+    <string name="body_hint">Scrivi qualcosa… # titolo, - elenco, 1. numeri, [] to-do, &gt; toggle, \" citazione</string>
+    <string name="pinned">● Nelle notifiche</string>
+    <string name="unpinned">○ Fissa nelle notifiche</string>
+    <string name="channel_name">Nota</string>
+    <string name="channel_desc">La nota fissata, sempre visibile</string>
+    <string name="banner_permission">Le notifiche sono disattivate. Tocca per attivarle.</string>
+    <string name="banner_promoted">Le Live Update sono disattivate per questa app. Tocca per attivarle.</string>
+</resources>
