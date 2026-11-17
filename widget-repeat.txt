@@ -1,0 +1,40 @@
+
+com.kazeracer.livenote.DeviceTest:.
+
+Time: 3.444
+
+OK (1 test)
+
+
+
+com.kazeracer.livenote.DeviceTest:.
+
+Time: 2.995
+
+OK (1 test)
+
+
+
+com.kazeracer.livenote.DeviceTest:.
+
+Time: 2.611
+
+OK (1 test)
+
+
+
+com.kazeracer.livenote.DeviceTest:.
+
+Time: 1.726
+
+OK (1 test)
+
+
+
+com.kazeracer.livenote.DeviceTest:.
+
+Time: 2.201
+
+OK (1 test)
+
+

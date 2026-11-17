@@ -1,0 +1,2 @@
+--------- beginning of main
+11-17 15:20:23.421  2482  2610 I LiveNoteTest: flags=0xa
