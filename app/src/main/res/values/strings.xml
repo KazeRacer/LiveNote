@@ -8,4 +8,5 @@
     <string name="channel_desc">La nota fissata, sempre visibile</string>
     <string name="banner_permission">Le notifiche sono disattivate. Tocca per attivarle.</string>
     <string name="banner_promoted">Le Live Update sono disattivate per questa app. Tocca per attivarle.</string>
+    <string name="widget_desc">La tua nota, sempre sulla home</string>
 </resources>

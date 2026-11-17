@@ -26,6 +26,7 @@ object NoteNotifier {
     private const val ACTION_PROMOTION_SETTINGS = "android.settings.APP_NOTIFICATION_PROMOTION_SETTINGS"
 
     fun refresh(context: Context) {
+        WidgetProvider.update(context)
         val store = NoteStore(context)
         val nm = context.getSystemService(NotificationManager::class.java)
         if (!store.pinned || store.isEmpty || !canNotify(context)) {

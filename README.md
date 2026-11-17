@@ -7,6 +7,7 @@ Una sola nota, sempre nelle notifiche. Minimal, in stile Notion.
 - **Spunte dalla notifica**: sotto la nota compaiono fino a 3 pulsanti con le prossime to-do da spuntare.
 - **Nota lunga**: se non entra nella notifica, l'ultima riga dice quante righe mancano.
 - **Finestra flottante**: l'app si apre come una scheda sopra lo sfondo, con la tastiera sotto. Tocca fuori per chiuderla.
+- **Widget**: la nota sulla home, scrollabile, con gli angoli del tuo launcher. Toccalo per aprirla.
 - **Persistente**: se la scorri via torna subito; si toglie solo dal pulsante in alto nell'app. Torna anche dopo il riavvio.
 - **Markdown come Notion** nel corpo:
 
