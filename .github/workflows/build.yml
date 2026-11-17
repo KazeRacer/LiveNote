@@ -105,6 +105,11 @@ jobs:
             adb shell pm grant com.kazeracer.livenote android.permission.POST_NOTIFICATIONS
             adb shell appwidget grantbind --package com.kazeracer.livenote --user 0
             adb shell am instrument -w -r -e notClass com.kazeracer.livenote.DemoNote com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner > shots/tests.txt 2>&1 || true
+            adb shell am instrument -w -e class com.kazeracer.livenote.DeviceTest#widgetBellTogglesTheNotification com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner >> shots/widget-repeat.txt 2>&1 || true
+            adb shell am instrument -w -e class com.kazeracer.livenote.DeviceTest#widgetBellTogglesTheNotification com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner >> shots/widget-repeat.txt 2>&1 || true
+            adb shell am instrument -w -e class com.kazeracer.livenote.DeviceTest#widgetBellTogglesTheNotification com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner >> shots/widget-repeat.txt 2>&1 || true
+            adb shell am instrument -w -e class com.kazeracer.livenote.DeviceTest#widgetBellTogglesTheNotification com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner >> shots/widget-repeat.txt 2>&1 || true
+            adb shell am instrument -w -e class com.kazeracer.livenote.DeviceTest#widgetBellTogglesTheNotification com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner >> shots/widget-repeat.txt 2>&1 || true
             adb logcat -d -s LiveNoteTest:I > shots/logcat.txt || true
             adb shell dumpsys notification --noredact > shots/notifications.txt || true
             adb shell am instrument -w -e class com.kazeracer.livenote.DemoNote com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner
@@ -118,6 +123,7 @@ jobs:
             adb exec-out screencap -p > shots/2-notifications.png
             adb shell cmd statusbar collapse
             cat shots/tests.txt
+            grep -E "OK \(|Failures|timed out" shots/widget-repeat.txt || true
             grep -q "^OK (" shots/tests.txt
 
       - uses: actions/upload-artifact@v4

@@ -62,10 +62,20 @@ class DeviceTest {
             if (ok) return
             SystemClock.sleep(150)
         }
-        throw AssertionError("timed out waiting for: $what")
+        var state = ""
+        inst.runOnMainSync { state = debugState() }
+        throw AssertionError("timed out waiting for: $what | $state")
     }
 
     private fun bell(view: AppWidgetHostView): ImageView? = view.findViewById(R.id.pin_toggle)
+
+    private var hostView: AppWidgetHostView? = null
+
+    private fun debugState(): String {
+        val v = hostView
+        return "pinned=${store.pinned} scheduledAt=${store.scheduledAt} shown=${noteShown() != null} " +
+            "bellDesc=${v?.let { bell(it)?.contentDescription }} hostChild=${v?.getChildAt(0)?.javaClass?.simpleName}"
+    }
 
     @Test fun widgetBellTogglesTheNotification() {
         val mgr = AppWidgetManager.getInstance(ctx)
@@ -76,6 +86,7 @@ class DeviceTest {
         )
         lateinit var view: AppWidgetHostView
         inst.runOnMainSync { view = host.createView(ctx, widgetId, mgr.getAppWidgetInfo(widgetId)) }
+        hostView = view
         WidgetProvider.update(ctx)
 
         val on = ctx.getString(R.string.pinned)
@@ -96,7 +107,7 @@ class DeviceTest {
         waitFor("notification back") { noteShown() != null }
 
         // A tap also cancels a running timer.
-        Scheduler.schedule(ctx, Scheduler.inMinutes(60))
+        inst.runOnMainSync { Scheduler.schedule(ctx, Scheduler.inMinutes(60)) }
         waitFor("outline bell with timer") { bell(view)?.contentDescription == off }
         val time = view.findViewById<View>(R.id.pin_time)
         waitFor("time label visible") { time.visibility == View.VISIBLE }
