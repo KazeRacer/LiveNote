@@ -2,6 +2,8 @@ package com.kazeracer.livenote
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.TimePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.SharedPreferences
@@ -25,6 +27,7 @@ class MainActivity : Activity() {
     private lateinit var title: EditText
     private lateinit var body: MarkdownEditor
     private lateinit var pin: TextView
+    private lateinit var timer: TextView
     private lateinit var banner: TextView
     private lateinit var crumb: TextView
 
@@ -34,6 +37,7 @@ class MainActivity : Activity() {
 
     /** The note can change from the notification (ticking a to-do): show it. */
     private val external = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == "pinned" || key == "scheduledAt") updatePin()
         if (key == "body" && !dirty && store.body != body.getMarkdown()) {
             val sel = body.selectionStart
             body.setMarkdown(store.body, store.collapsed)
@@ -49,6 +53,7 @@ class MainActivity : Activity() {
         title = findViewById(R.id.title)
         body = findViewById(R.id.body)
         pin = findViewById(R.id.pin)
+        timer = findViewById(R.id.timer)
         banner = findViewById(R.id.banner)
         crumb = findViewById(R.id.crumb)
 
@@ -78,10 +83,12 @@ class MainActivity : Activity() {
         body.onChanged = { scheduleSave() }
 
         pin.setOnClickListener {
+            Scheduler.cancel(this)
             store.pinned = !store.pinned
             save()
             updatePin()
         }
+        timer.setOnClickListener { showTimer() }
 
         // Tap outside the card closes it.
         findViewById<View>(R.id.root).setOnClickListener { finish() }
@@ -146,6 +153,47 @@ class MainActivity : Activity() {
     private fun updatePin() {
         pin.setText(if (store.pinned) R.string.pinned else R.string.unpinned)
         pin.setTextColor(getColor(if (store.pinned) R.color.text else R.color.text_secondary))
+        val at = store.scheduledAt
+        timer.text = if (at > 0) Scheduler.label(at) else ""
+        timer.compoundDrawablePadding = if (at > 0) (4 * resources.displayMetrics.density).toInt() else 0
+    }
+
+    /** Minimal timer: hide the note now, show it again at the chosen time. */
+    private fun showTimer() {
+        val at = store.scheduledAt
+        val labels = ArrayList<String>()
+        val actions = ArrayList<() -> Unit>()
+        fun item(label: String, action: () -> Unit) { labels.add(label); actions.add(action) }
+        fun set(time: Long) { save(); Scheduler.schedule(this, time); updatePin() }
+
+        if (at > 0) item(getString(R.string.timer_cancel, Scheduler.label(at))) {
+            Scheduler.cancel(this); store.pinned = true; NoteNotifier.refresh(this); updatePin()
+        }
+        item(getString(R.string.timer_30m)) { set(Scheduler.inMinutes(30)) }
+        item(getString(R.string.timer_1h)) { set(Scheduler.inMinutes(60)) }
+        item(getString(R.string.timer_3h)) { set(Scheduler.inMinutes(180)) }
+        if (java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) < 20) {
+            item(getString(R.string.timer_evening)) { set(Scheduler.nextAt(20, 0)) }
+        }
+        item(getString(R.string.timer_tomorrow)) {
+            val c = java.util.Calendar.getInstance().apply { add(java.util.Calendar.DAY_OF_YEAR, 1) }
+            c.set(java.util.Calendar.HOUR_OF_DAY, 9); c.set(java.util.Calendar.MINUTE, 0)
+            c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0)
+            set(c.timeInMillis)
+        }
+        item(getString(R.string.timer_pick)) {
+            val now = java.util.Calendar.getInstance()
+            TimePickerDialog(this, { _, h, m -> set(Scheduler.nextAt(h, m)) },
+                now.get(java.util.Calendar.HOUR_OF_DAY), now.get(java.util.Calendar.MINUTE), true).show()
+        }
+        if (!Scheduler.canBeExact(this)) item(getString(R.string.timer_exact)) {
+            open(Scheduler.exactSettingsIntent(this))
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.timer_title)
+            .setItems(labels.toTypedArray()) { _, which -> actions[which]() }
+            .show()
     }
 
     private fun updateBanner() {

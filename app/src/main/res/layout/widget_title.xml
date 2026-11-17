@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:fontFamily="sans-serif"
     android:paddingBottom="6dp"
+    android:paddingEnd="44dp"
     android:textColor="@color/text"
     android:textSize="18sp"
     android:textStyle="bold" />

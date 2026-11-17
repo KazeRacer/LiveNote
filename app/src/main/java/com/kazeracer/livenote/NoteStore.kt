@@ -24,6 +24,11 @@ class NoteStore(context: Context) {
         get() = prefs.getBoolean("pinned", true)
         set(v) = prefs.edit().putBoolean("pinned", v).apply()
 
+    /** When the note should (re)appear in the shade; 0 = no timer. */
+    var scheduledAt: Long
+        get() = prefs.getLong("scheduledAt", 0L)
+        set(v) = prefs.edit().putLong("scheduledAt", v).apply()
+
     val isEmpty: Boolean get() = title.isBlank() && body.isBlank()
 
     fun save(title: String, body: String, collapsed: Set<Int>) {

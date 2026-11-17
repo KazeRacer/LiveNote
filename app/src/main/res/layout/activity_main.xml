@@ -52,6 +52,22 @@
                 android:textSize="13sp" />
 
             <TextView
+                android:id="@+id/timer"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/pill"
+                android:drawableStart="@drawable/ic_clock"
+                android:drawablePadding="4dp"
+                android:drawableTint="@color/text_secondary"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="@color/text"
+                android:textSize="12sp" />
+
+            <TextView
                 android:id="@+id/pin"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 
@@ -24,7 +25,9 @@ class WidgetProvider : AppWidgetProvider() {
         fun update(context: Context) {
             val manager = AppWidgetManager.getInstance(context) ?: return
             val ids = manager.getAppWidgetIds(ComponentName(context, WidgetProvider::class.java))
-            if (ids.isNotEmpty()) manager.notifyAppWidgetViewDataChanged(ids, R.id.list)
+            if (ids.isEmpty()) return
+            for (id in ids) manager.updateAppWidget(id, views(context, id))
+            manager.notifyAppWidgetViewDataChanged(ids, R.id.list)
         }
 
         @Suppress("DEPRECATION")
@@ -48,6 +51,21 @@ class WidgetProvider : AppWidgetProvider() {
                 setPendingIntentTemplate(R.id.list, template)
                 setOnClickPendingIntent(android.R.id.background, tap)
                 setOnClickPendingIntent(R.id.empty, tap)
+
+                val store = NoteStore(context)
+                setImageViewResource(R.id.pin_icon, if (store.pinned) R.drawable.ic_bell else R.drawable.ic_bell_off)
+                if (store.scheduledAt > 0) {
+                    setTextViewText(R.id.pin_time, Scheduler.label(store.scheduledAt))
+                    setViewVisibility(R.id.pin_time, View.VISIBLE)
+                } else {
+                    setViewVisibility(R.id.pin_time, View.GONE)
+                }
+                val toggle = PendingIntent.getBroadcast(
+                    context, 12,
+                    Intent(context, RepostReceiver::class.java).setAction(RepostReceiver.ACTION_TOGGLE_PIN),
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+                )
+                setOnClickPendingIntent(R.id.pin_toggle, toggle)
             }
         }
     }
