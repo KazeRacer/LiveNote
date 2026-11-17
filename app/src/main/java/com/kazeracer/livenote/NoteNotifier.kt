@@ -13,7 +13,9 @@ import android.os.Bundle
 import android.provider.Settings
 
 object NoteNotifier {
-    private const val CHANNEL = "note"
+    const val CHANNEL = "note"
+    /** Same note, but this channel vibrates: used when a timer brings it back. */
+    const val CHANNEL_ALERT = "note_alert"
     private const val ID = 1
 
     // Rough rows the expanded notification can show before the system cuts it.
@@ -25,7 +27,8 @@ object NoteNotifier {
     private const val EXTRA_REQUEST_PROMOTED_ONGOING = "android.requestPromotedOngoing"
     private const val ACTION_PROMOTION_SETTINGS = "android.settings.APP_NOTIFICATION_PROMOTION_SETTINGS"
 
-    fun refresh(context: Context) {
+    /** @param alert vibrate (timer went off) */
+    fun refresh(context: Context, alert: Boolean = false) {
         WidgetProvider.update(context)
         val store = NoteStore(context)
         val nm = context.getSystemService(NotificationManager::class.java)
@@ -34,7 +37,7 @@ object NoteNotifier {
             return
         }
         ensureChannel(context)
-        nm.notify(ID, build(context, store.title, store.body, store.collapsed))
+        nm.notify(ID, build(context, store.title, store.body, store.collapsed, alert))
     }
 
     fun canNotify(context: Context): Boolean {
@@ -67,6 +70,16 @@ object NoteNotifier {
 
     private fun ensureChannel(context: Context) {
         val nm = context.getSystemService(NotificationManager::class.java)
+        if (nm.getNotificationChannel(CHANNEL_ALERT) == null) {
+            val alert = NotificationChannel(CHANNEL_ALERT, context.getString(R.string.channel_timer), NotificationManager.IMPORTANCE_DEFAULT)
+            alert.setSound(null, null)
+            alert.enableVibration(true)
+            alert.vibrationPattern = longArrayOf(0, 250, 150, 250)
+            alert.enableLights(false)
+            alert.setShowBadge(false)
+            alert.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            nm.createNotificationChannel(alert)
+        }
         if (nm.getNotificationChannel(CHANNEL) != null) return
         // Not MIN/LOW: Live Updates need a channel that is allowed on the lock screen
         // and status bar. Silent, no vibration: the note should just sit there.
@@ -80,7 +93,7 @@ object NoteNotifier {
         nm.createNotificationChannel(ch)
     }
 
-    private fun build(context: Context, rawTitle: String, body: String, collapsed: Set<Int>): Notification {
+    private fun build(context: Context, rawTitle: String, body: String, collapsed: Set<Int>, alert: Boolean): Notification {
         val title = rawTitle.trim().ifEmpty { context.getString(R.string.title_hint) }
         // Up to 3 buttons that tick the next open to-dos, right from the shade.
         val todos = MarkdownCore.openTodos(body, collapsed).take(3)
@@ -108,7 +121,7 @@ object NoteNotifier {
             .setOngoing(true)
             .build()
 
-        val b = Notification.Builder(context, CHANNEL)
+        val b = Notification.Builder(context, if (alert) CHANNEL_ALERT else CHANNEL)
             .setSmallIcon(R.drawable.ic_note)
             .setContentTitle(title)
             .setContentText(firstLine)
@@ -116,7 +129,7 @@ object NoteNotifier {
             .setContentIntent(open)
             .setDeleteIntent(dismissed)
             .setOngoing(true)
-            .setOnlyAlertOnce(true)
+            .setOnlyAlertOnce(!alert)
             .setShowWhen(false)
             .setCategory(Notification.CATEGORY_STATUS)
             .setVisibility(Notification.VISIBILITY_PUBLIC)

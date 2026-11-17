@@ -40,6 +40,14 @@ jobs:
           name: LiveNote-apk
           path: out/*.apk
 
+      - name: Remove pre-beta 1.0.x releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for t in $(gh release list -R ${{ github.repository }} --limit 100 --json tagName -q '.[].tagName' | grep '^v1\.0\.' || true); do
+            gh release delete "$t" -R ${{ github.repository }} --yes --cleanup-tag
+          done
+
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
@@ -51,3 +59,73 @@ jobs:
           body: |
             APK di test. Scaricalo dal telefono e installalo (consenti "installa app sconosciute").
             Le build successive si installano sopra questa senza perdere la nota.
+
+  device-test:
+    # Real Android 16 emulator: hosts the widget, taps the bell, fires the timer.
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-36 build-tools;36.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Build debug + test APKs
+        run: gradle :app:assembleDebug :app:assembleDebugAndroidTest --no-daemon
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            mkdir -p shots
+            adb install -r app/build/outputs/apk/debug/app-debug.apk
+            adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+            adb shell pm grant com.kazeracer.livenote android.permission.POST_NOTIFICATIONS
+            adb shell appwidget grantbind --package com.kazeracer.livenote --user 0
+            adb shell am instrument -w -r -e notClass com.kazeracer.livenote.DemoNote com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner > shots/tests.txt 2>&1 || true
+            adb logcat -d -s LiveNoteTest:I > shots/logcat.txt || true
+            adb shell am instrument -w -e class com.kazeracer.livenote.DemoNote com.kazeracer.livenote.test/androidx.test.runner.AndroidJUnitRunner
+            adb shell am start -n com.kazeracer.livenote/.MainActivity
+            sleep 5
+            adb exec-out screencap -p > shots/1-app.png
+            adb shell input keyevent KEYCODE_BACK
+            adb shell input keyevent KEYCODE_HOME
+            adb shell cmd statusbar expand-notifications
+            sleep 4
+            adb exec-out screencap -p > shots/2-notifications.png
+            adb shell cmd statusbar collapse
+            adb shell input keyevent KEYCODE_SLEEP
+            sleep 3
+            adb shell input keyevent KEYCODE_WAKEUP
+            sleep 4
+            adb exec-out screencap -p > shots/3-lockscreen.png
+            cat shots/tests.txt
+            grep -q "^OK (" shots/tests.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: device-test
+          path: shots/

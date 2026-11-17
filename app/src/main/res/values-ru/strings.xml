@@ -21,6 +21,7 @@
     <string name="tomorrow_at">завтра %1$s</string>
     <string name="welcome_title">Задачи</string>
     <string name="welcome_body">[] Оценить Live Note в Play Маркете</string>
+    <string name="channel_timer">Таймер</string>
     <plurals name="more_lines">
         <item quantity="one">⋯   ещё %d строка · нажмите, чтобы открыть</item>
         <item quantity="few">⋯   ещё %d строки · нажмите, чтобы открыть</item>

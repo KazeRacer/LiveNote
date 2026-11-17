@@ -21,6 +21,7 @@
     <string name="tomorrow_at">明日 %1$s</string>
     <string name="welcome_title">ToDo</string>
     <string name="welcome_body">[] Play ストアで Live Note を評価</string>
+    <string name="channel_timer">タイマー</string>
     <plurals name="more_lines">
         <item quantity="other">⋯   あと%d行 · タップして開く</item>
     </plurals>

@@ -21,6 +21,7 @@
     <string name="tomorrow_at">내일 %1$s</string>
     <string name="welcome_title">할 일</string>
     <string name="welcome_body">[] Play 스토어에서 Live Note 평가하기</string>
+    <string name="channel_timer">타이머</string>
     <plurals name="more_lines">
         <item quantity="other">⋯   %d줄 더 · 탭하여 열기</item>
     </plurals>

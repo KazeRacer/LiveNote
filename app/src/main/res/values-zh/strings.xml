@@ -21,6 +21,7 @@
     <string name="tomorrow_at">明天 %1$s</string>
     <string name="welcome_title">待办</string>
     <string name="welcome_body">[] 在 Play 商店评价 Live Note</string>
+    <string name="channel_timer">定时</string>
     <plurals name="more_lines">
         <item quantity="other">⋯   还有 %d 行 · 点按打开</item>
     </plurals>

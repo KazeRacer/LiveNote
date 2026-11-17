@@ -30,7 +30,7 @@ object Scheduler {
         val store = NoteStore(context)
         store.scheduledAt = 0L
         store.pinned = true
-        NoteNotifier.refresh(context)
+        NoteNotifier.refresh(context, alert = true)
     }
 
     /** Alarms don't survive a reboot: re-arm, or fire if the time already passed. */

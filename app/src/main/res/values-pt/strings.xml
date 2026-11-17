@@ -21,6 +21,7 @@
     <string name="tomorrow_at">amanhã %1$s</string>
     <string name="welcome_title">Tarefas</string>
     <string name="welcome_body">[] Avalie o Live Note na Play Store</string>
+    <string name="channel_timer">Timer</string>
     <plurals name="more_lines">
         <item quantity="one">⋯   mais %d linha · toque para abrir</item>
         <item quantity="other">⋯   mais %d linhas · toque para abrir</item>

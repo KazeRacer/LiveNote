@@ -15,6 +15,7 @@ android {
         targetSdk = 36
         versionCode = buildNumber
         versionName = "0.1.$buildNumber"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -48,4 +49,7 @@ kotlin {
 
 dependencies {
     testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
 }
