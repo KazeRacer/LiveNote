@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_hint">Sem título</string>
+    <string name="body_hint">Escreva algo… # título, - lista, 1. números, [] tarefa, &gt; alternância, \" citação</string>
+    <string name="pinned">Nas notificações</string>
+    <string name="unpinned">Fixar nas notificações</string>
+    <string name="channel_name">Nota</string>
+    <string name="channel_desc">Sua nota fixada, sempre visível</string>
+    <string name="banner_permission">As notificações estão desativadas. Toque para ativar.</string>
+    <string name="banner_promoted">As Live Updates estão desativadas para este app. Toque para ativar.</string>
+    <string name="widget_desc">Sua nota, sempre na tela inicial</string>
+    <string name="timer_title">Mostrar nas notificações…</string>
+    <string name="timer_cancel">Cancelar timer (%1$s)</string>
+    <string name="timer_30m">Em 30 minutos</string>
+    <string name="timer_1h">Em 1 hora</string>
+    <string name="timer_3h">Em 3 horas</string>
+    <string name="timer_evening">Hoje às 20:00</string>
+    <string name="timer_tomorrow">Amanhã às 9:00</string>
+    <string name="timer_pick">Escolher horário…</string>
+    <string name="timer_exact">Horário exato: permitir</string>
+    <string name="tomorrow_at">amanhã %1$s</string>
+    <string name="welcome_title">Tarefas</string>
+    <string name="welcome_body">[] Avalie o Live Note na Play Store</string>
+    <plurals name="more_lines">
+        <item quantity="one">⋯   mais %d linha · toque para abrir</item>
+        <item quantity="other">⋯   mais %d linhas · toque para abrir</item>
+    </plurals>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_hint">无标题</string>
+    <string name="body_hint">写点什么… # 标题、- 列表、1. 编号、[] 待办、&gt; 折叠、\" 引用</string>
+    <string name="pinned">在通知中</string>
+    <string name="unpinned">固定到通知</string>
+    <string name="channel_name">笔记</string>
+    <string name="channel_desc">已固定的笔记，始终可见</string>
+    <string name="banner_permission">通知已关闭。点按以开启。</string>
+    <string name="banner_promoted">此应用的实时更新已关闭。点按以开启。</string>
+    <string name="widget_desc">你的笔记，始终在主屏幕上</string>
+    <string name="timer_title">在通知中显示…</string>
+    <string name="timer_cancel">取消定时（%1$s）</string>
+    <string name="timer_30m">30 分钟后</string>
+    <string name="timer_1h">1 小时后</string>
+    <string name="timer_3h">3 小时后</string>
+    <string name="timer_evening">今晚 20:00</string>
+    <string name="timer_tomorrow">明天 9:00</string>
+    <string name="timer_pick">选择时间…</string>
+    <string name="timer_exact">精确时间：允许</string>
+    <string name="tomorrow_at">明天 %1$s</string>
+    <string name="welcome_title">待办</string>
+    <string name="welcome_body">[] 在 Play 商店评价 Live Note</string>
+    <plurals name="more_lines">
+        <item quantity="other">⋯   还有 %d 行 · 点按打开</item>
+    </plurals>
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_hint">Без названия</string>
+    <string name="body_hint">Напишите что-нибудь… # заголовок, - список, 1. номера, [] задача, &gt; раскрывающийся блок, \" цитата</string>
+    <string name="pinned">В уведомлениях</string>
+    <string name="unpinned">Закрепить в уведомлениях</string>
+    <string name="channel_name">Заметка</string>
+    <string name="channel_desc">Закреплённая заметка, всегда на виду</string>
+    <string name="banner_permission">Уведомления выключены. Нажмите, чтобы включить.</string>
+    <string name="banner_promoted">Live Updates для этого приложения выключены. Нажмите, чтобы включить.</string>
+    <string name="widget_desc">Ваша заметка всегда на главном экране</string>
+    <string name="timer_title">Показать в уведомлениях…</string>
+    <string name="timer_cancel">Отменить таймер (%1$s)</string>
+    <string name="timer_30m">Через 30 минут</string>
+    <string name="timer_1h">Через 1 час</string>
+    <string name="timer_3h">Через 3 часа</string>
+    <string name="timer_evening">Сегодня в 20:00</string>
+    <string name="timer_tomorrow">Завтра в 9:00</string>
+    <string name="timer_pick">Выбрать время…</string>
+    <string name="timer_exact">Точное время: разрешить</string>
+    <string name="tomorrow_at">завтра %1$s</string>
+    <string name="welcome_title">Задачи</string>
+    <string name="welcome_body">[] Оценить Live Note в Play Маркете</string>
+    <plurals name="more_lines">
+        <item quantity="one">⋯   ещё %d строка · нажмите, чтобы открыть</item>
+        <item quantity="few">⋯   ещё %d строки · нажмите, чтобы открыть</item>
+        <item quantity="many">⋯   ещё %d строк · нажмите, чтобы открыть</item>
+        <item quantity="other">⋯   ещё %d строки · нажмите, чтобы открыть</item>
+    </plurals>
+</resources>

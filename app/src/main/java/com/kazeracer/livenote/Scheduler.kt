@@ -6,10 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 
 /** "Show the note at…": hides it now, pins it back at the chosen time. */
 object Scheduler {
@@ -79,10 +77,10 @@ object Scheduler {
         return c.timeInMillis
     }
 
-    fun label(at: Long): String {
-        val time = SimpleDateFormat("HH:mm", Locale.ITALY).format(Date(at))
+    fun label(context: Context, at: Long): String {
+        val time = android.text.format.DateFormat.getTimeFormat(context).format(Date(at))
         val day = Calendar.getInstance().apply { timeInMillis = at }.get(Calendar.DAY_OF_YEAR)
         val today = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
-        return if (day == today) time else "domani $time"
+        return if (day == today) time else context.getString(R.string.tomorrow_at, time)
     }
 }

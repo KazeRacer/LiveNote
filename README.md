@@ -28,6 +28,6 @@ Invio continua l'elenco; Invio su una voce vuota la chiude.
 
 ## Download
 
-Ultimo APK: [Releases](../../releases/latest). Ogni push su `main` compila e pubblica una nuova release (GitHub Actions).
+Ultimo APK (beta 0.x): [Releases](../../releases/latest). Ogni push su `main` compila e pubblica una nuova release (GitHub Actions).
 
 La chiave di firma in `app/signing.keystore` è solo per test: serve perché ogni build si installi sopra la precedente.

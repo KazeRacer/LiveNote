@@ -29,7 +29,6 @@ class MainActivity : Activity() {
     private lateinit var pin: TextView
     private lateinit var timer: TextView
     private lateinit var banner: TextView
-    private lateinit var crumb: TextView
 
     private val handler = Handler(Looper.getMainLooper())
     private val saveNow = Runnable { save() }
@@ -55,13 +54,16 @@ class MainActivity : Activity() {
         pin = findViewById(R.id.pin)
         timer = findViewById(R.id.timer)
         banner = findViewById(R.id.banner)
-        crumb = findViewById(R.id.crumb)
 
         setupWindow()
 
+        // First launch: a little to-do to start with.
+        if (!store.prefs.contains("title")) {
+            store.save(getString(R.string.welcome_title), getString(R.string.welcome_body), emptySet())
+        }
+
         title.setText(store.title)
         body.setMarkdown(store.body, store.collapsed)
-        updateCrumb()
         updatePin()
 
         title.addTextChangedListener(object : TextWatcher {
@@ -76,8 +78,7 @@ class MainActivity : Activity() {
                     body.setSelection(0)
                     return
                 }
-                updateCrumb()
-                scheduleSave()
+                        scheduleSave()
             }
         })
         body.onChanged = { scheduleSave() }
@@ -145,16 +146,17 @@ class MainActivity : Activity() {
         NoteNotifier.refresh(this)
     }
 
-    private fun updateCrumb() {
-        val t = title.text.toString().trim()
-        crumb.text = if (t.isEmpty()) getString(R.string.app_name) else "${getString(R.string.app_name)}  ·  $t"
-    }
+
 
     private fun updatePin() {
         pin.setText(if (store.pinned) R.string.pinned else R.string.unpinned)
         pin.setTextColor(getColor(if (store.pinned) R.color.text else R.color.text_secondary))
+        // Filled bell = in the notifications, outline = not.
+        pin.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            getDrawable(if (store.pinned) R.drawable.ic_bell_small else R.drawable.ic_bell_outline_small), null, null, null,
+        )
         val at = store.scheduledAt
-        timer.text = if (at > 0) Scheduler.label(at) else ""
+        timer.text = if (at > 0) Scheduler.label(this, at) else ""
         timer.compoundDrawablePadding = if (at > 0) (4 * resources.displayMetrics.density).toInt() else 0
     }
 
@@ -166,7 +168,7 @@ class MainActivity : Activity() {
         fun item(label: String, action: () -> Unit) { labels.add(label); actions.add(action) }
         fun set(time: Long) { save(); Scheduler.schedule(this, time); updatePin() }
 
-        if (at > 0) item(getString(R.string.timer_cancel, Scheduler.label(at))) {
+        if (at > 0) item(getString(R.string.timer_cancel, Scheduler.label(this, at))) {
             Scheduler.cancel(this); store.pinned = true; NoteNotifier.refresh(this); updatePin()
         }
         item(getString(R.string.timer_30m)) { set(Scheduler.inMinutes(30)) }

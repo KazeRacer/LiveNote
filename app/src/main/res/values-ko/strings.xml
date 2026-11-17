@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_hint">제목 없음</string>
+    <string name="body_hint">내용을 입력하세요… # 제목, - 목록, 1. 번호, [] 할 일, &gt; 토글, \" 인용</string>
+    <string name="pinned">알림에 표시 중</string>
+    <string name="unpinned">알림에 고정</string>
+    <string name="channel_name">메모</string>
+    <string name="channel_desc">고정된 메모, 항상 표시</string>
+    <string name="banner_permission">알림이 꺼져 있습니다. 탭하여 켜세요.</string>
+    <string name="banner_promoted">이 앱의 실시간 업데이트가 꺼져 있습니다. 탭하여 켜세요.</string>
+    <string name="widget_desc">메모를 항상 홈 화면에</string>
+    <string name="timer_title">알림에 표시…</string>
+    <string name="timer_cancel">타이머 취소 (%1$s)</string>
+    <string name="timer_30m">30분 후</string>
+    <string name="timer_1h">1시간 후</string>
+    <string name="timer_3h">3시간 후</string>
+    <string name="timer_evening">오늘 밤 20:00</string>
+    <string name="timer_tomorrow">내일 9:00</string>
+    <string name="timer_pick">시간 선택…</string>
+    <string name="timer_exact">정확한 시간: 허용</string>
+    <string name="tomorrow_at">내일 %1$s</string>
+    <string name="welcome_title">할 일</string>
+    <string name="welcome_body">[] Play 스토어에서 Live Note 평가하기</string>
+    <plurals name="more_lines">
+        <item quantity="other">⋯   %d줄 더 · 탭하여 열기</item>
+    </plurals>
+</resources>

@@ -38,7 +38,7 @@ object Markdown {
      * Renders what fits in about [budgetRows] rows. If something is cut, ends with
      * a "⋯ altre N righe" line so it is obvious the note continues.
      */
-    fun toNotification(body: String, collapsed: Set<Int>, budgetRows: Int): CharSequence {
+    fun toNotification(body: String, collapsed: Set<Int>, budgetRows: Int, more: (Int) -> String = { "⋯" }): CharSequence {
         val lines = body.trimEnd().split('\n')
         val (shown, left) = MarkdownCore.planNotification(body, collapsed, budgetRows)
         val sb = SpannableStringBuilder()
@@ -82,7 +82,7 @@ object Markdown {
         if (left > 0) {
             if (sb.isNotEmpty()) sb.append('\n')
             val s = sb.length
-            sb.append("⋯   altre $left ${if (left == 1) "riga" else "righe"} · tocca per aprire")
+            sb.append(more(left))
             sb.style(StyleSpan(Typeface.ITALIC), s)
             sb.style(RelativeSizeSpan(0.9f), s)
         }

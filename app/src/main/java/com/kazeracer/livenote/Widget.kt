@@ -53,9 +53,10 @@ class WidgetProvider : AppWidgetProvider() {
                 setOnClickPendingIntent(R.id.empty, tap)
 
                 val store = NoteStore(context)
-                setImageViewResource(R.id.pin_icon, if (store.pinned) R.drawable.ic_bell else R.drawable.ic_bell_off)
+                setImageViewResource(R.id.pin_toggle, if (store.pinned) R.drawable.ic_bell else R.drawable.ic_bell_outline)
+                setContentDescription(R.id.pin_toggle, context.getString(if (store.pinned) R.string.pinned else R.string.unpinned))
                 if (store.scheduledAt > 0) {
-                    setTextViewText(R.id.pin_time, Scheduler.label(store.scheduledAt))
+                    setTextViewText(R.id.pin_time, Scheduler.label(context, store.scheduledAt))
                     setViewVisibility(R.id.pin_time, View.VISIBLE)
                 } else {
                     setViewVisibility(R.id.pin_time, View.GONE)

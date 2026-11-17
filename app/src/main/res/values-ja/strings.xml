@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_hint">無題</string>
+    <string name="body_hint">何か書いてください… # 見出し、- リスト、1. 番号、[] ToDo、&gt; トグル、\" 引用</string>
+    <string name="pinned">通知に表示中</string>
+    <string name="unpinned">通知に固定</string>
+    <string name="channel_name">メモ</string>
+    <string name="channel_desc">固定したメモ、いつでも表示</string>
+    <string name="banner_permission">通知がオフです。タップしてオンにします。</string>
+    <string name="banner_promoted">このアプリのライブアップデートがオフです。タップしてオンにします。</string>
+    <string name="widget_desc">メモをいつもホーム画面に</string>
+    <string name="timer_title">通知に表示…</string>
+    <string name="timer_cancel">タイマーを解除（%1$s）</string>
+    <string name="timer_30m">30分後</string>
+    <string name="timer_1h">1時間後</string>
+    <string name="timer_3h">3時間後</string>
+    <string name="timer_evening">今夜20:00</string>
+    <string name="timer_tomorrow">明日9:00</string>
+    <string name="timer_pick">時刻を選択…</string>
+    <string name="timer_exact">正確な時刻：許可</string>
+    <string name="tomorrow_at">明日 %1$s</string>
+    <string name="welcome_title">ToDo</string>
+    <string name="welcome_body">[] Play ストアで Live Note を評価</string>
+    <plurals name="more_lines">
+        <item quantity="other">⋯   あと%d行 · タップして開く</item>
+    </plurals>
+</resources>

@@ -84,7 +84,9 @@ object NoteNotifier {
         val title = rawTitle.trim().ifEmpty { context.getString(R.string.title_hint) }
         // Up to 3 buttons that tick the next open to-dos, right from the shade.
         val todos = MarkdownCore.openTodos(body, collapsed).take(3)
-        val rendered = Markdown.toNotification(body, collapsed, if (todos.isEmpty()) BUDGET_ROWS else BUDGET_ROWS_WITH_ACTIONS)
+        val rendered = Markdown.toNotification(body, collapsed, if (todos.isEmpty()) BUDGET_ROWS else BUDGET_ROWS_WITH_ACTIONS) { n ->
+            context.resources.getQuantityString(R.plurals.more_lines, n, n)
+        }
         val firstLine = Markdown.firstLine(body)
 
         val open = PendingIntent.getActivity(

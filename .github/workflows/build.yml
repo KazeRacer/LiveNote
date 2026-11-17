@@ -33,7 +33,7 @@ jobs:
       - name: Rename APK
         run: |
           mkdir -p out
-          cp app/build/outputs/apk/release/app-release.apk out/LiveNote-v1.0.${{ github.run_number }}.apk
+          cp app/build/outputs/apk/release/app-release.apk out/LiveNote-v0.1.${{ github.run_number }}.apk
 
       - uses: actions/upload-artifact@v4
         with:
@@ -43,9 +43,10 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: Live Note v1.0.${{ github.run_number }}
+          tag_name: v0.1.${{ github.run_number }}
+          name: Live Note v0.1.${{ github.run_number }}
           make_latest: true
+          prerelease: false
           files: out/*.apk
           body: |
             APK di test. Scaricalo dal telefono e installalo (consenti "installa app sconosciute").

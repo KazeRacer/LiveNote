@@ -1,21 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Live Note</string>
-    <string name="title_hint">Senza titolo</string>
-    <string name="body_hint">Scrivi qualcosa… # titolo, - elenco, 1. numeri, [] to-do, &gt; toggle, \" citazione</string>
-    <string name="pinned">● Nelle notifiche</string>
-    <string name="unpinned">○ Fissa nelle notifiche</string>
-    <string name="channel_name">Nota</string>
-    <string name="channel_desc">La nota fissata, sempre visibile</string>
-    <string name="banner_permission">Le notifiche sono disattivate. Tocca per attivarle.</string>
-    <string name="banner_promoted">Le Live Update sono disattivate per questa app. Tocca per attivarle.</string>
-    <string name="widget_desc">La tua nota, sempre sulla home</string>
-    <string name="timer_title">Mostra nelle notifiche…</string>
-    <string name="timer_cancel">Annulla timer (%1$s)</string>
-    <string name="timer_30m">Tra 30 minuti</string>
-    <string name="timer_1h">Tra 1 ora</string>
-    <string name="timer_3h">Tra 3 ore</string>
-    <string name="timer_evening">Stasera alle 20:00</string>
-    <string name="timer_tomorrow">Domani alle 9:00</string>
-    <string name="timer_pick">Scegli orario…</string>
-    <string name="timer_exact">Precisione al minuto: consenti</string>
+    <string name="app_name" translatable="false">Live Note</string>
+    <string name="title_hint">Untitled</string>
+    <string name="body_hint">Write something… # heading, - list, 1. numbers, [] to-do, &gt; toggle, \" quote</string>
+    <string name="pinned">In notifications</string>
+    <string name="unpinned">Pin to notifications</string>
+    <string name="channel_name">Note</string>
+    <string name="channel_desc">Your pinned note, always visible</string>
+    <string name="banner_permission">Notifications are off. Tap to turn them on.</string>
+    <string name="banner_promoted">Live Updates are off for this app. Tap to turn them on.</string>
+    <string name="widget_desc">Your note, always on the home screen</string>
+    <string name="timer_title">Show in notifications…</string>
+    <string name="timer_cancel">Cancel timer (%1$s)</string>
+    <string name="timer_30m">In 30 minutes</string>
+    <string name="timer_1h">In 1 hour</string>
+    <string name="timer_3h">In 3 hours</string>
+    <string name="timer_evening">Tonight at 8 PM</string>
+    <string name="timer_tomorrow">Tomorrow at 9 AM</string>
+    <string name="timer_pick">Pick a time…</string>
+    <string name="timer_exact">Exact timing: allow</string>
+    <string name="tomorrow_at">tomorrow %1$s</string>
+    <string name="welcome_title">ToDo</string>
+    <string name="welcome_body">[] Review Live Note on the Play Store</string>
+    <plurals name="more_lines">
+        <item quantity="one">⋯   %d more line · tap to open</item>
+        <item quantity="other">⋯   %d more lines · tap to open</item>
+    </plurals>
 </resources>
