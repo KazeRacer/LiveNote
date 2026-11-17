@@ -1,6 +1,7 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowShowWallpaper">true</item>
         <item name="android:colorBackground">@color/bg</item>
         <item name="android:colorAccent">@color/accent</item>
         <item name="android:colorPrimary">@color/bg</item>
@@ -8,7 +9,6 @@
         <item name="android:textColorHighlight">#33529CCA</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">@bool/light_bars</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
     </style>
-    <bool name="light_bars">false</bool>
 </resources>

@@ -3,8 +3,9 @@ package com.kazeracer.livenote
 import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -17,6 +18,7 @@ import android.view.WindowInsetsController
 import android.widget.EditText
 import android.widget.TextView
 
+/** A floating card over the wallpaper, looking like the note in the shade. */
 class MainActivity : Activity() {
 
     private lateinit var store: NoteStore
@@ -28,6 +30,16 @@ class MainActivity : Activity() {
 
     private val handler = Handler(Looper.getMainLooper())
     private val saveNow = Runnable { save() }
+    private var dirty = false
+
+    /** The note can change from the notification (ticking a to-do): show it. */
+    private val external = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == "body" && !dirty && store.body != body.getMarkdown()) {
+            val sel = body.selectionStart
+            body.setMarkdown(store.body, store.collapsed)
+            body.setSelection(sel.coerceIn(0, body.text.length))
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +52,10 @@ class MainActivity : Activity() {
         banner = findViewById(R.id.banner)
         crumb = findViewById(R.id.crumb)
 
-        setupEdgeToEdge()
+        setupWindow()
 
         title.setText(store.title)
-        body.setMarkdown(store.body)
+        body.setMarkdown(store.body, store.collapsed)
         updateCrumb()
         updatePin()
 
@@ -71,13 +83,27 @@ class MainActivity : Activity() {
             updatePin()
         }
 
+        // Tap outside the card closes it.
+        findViewById<View>(R.id.root).setOnClickListener { finish() }
+
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
         }
 
-        if (store.isEmpty) title.requestFocus()
+        if (title.text.isBlank()) {
+            title.requestFocus()
+        } else {
+            body.requestFocus()
+            body.setSelection(body.text.length)
+        }
+        store.prefs.registerOnSharedPreferenceChangeListener(external)
+    }
+
+    override fun onDestroy() {
+        store.prefs.unregisterOnSharedPreferenceChangeListener(external)
+        super.onDestroy()
     }
 
     override fun onResume() {
@@ -99,19 +125,22 @@ class MainActivity : Activity() {
     }
 
     private fun scheduleSave() {
+        dirty = true
         handler.removeCallbacks(saveNow)
         handler.postDelayed(saveNow, 400)
     }
 
     private fun save() {
-        store.title = title.text.toString()
-        store.body = body.getMarkdown()
+        if (dirty) {
+            store.save(title.text.toString(), body.getMarkdown(), body.getCollapsedLines())
+            dirty = false
+        }
         NoteNotifier.refresh(this)
     }
 
     private fun updateCrumb() {
         val t = title.text.toString().trim()
-        crumb.text = if (t.isEmpty()) getString(R.string.app_name) else "${getString(R.string.app_name)}  /  $t"
+        crumb.text = if (t.isEmpty()) getString(R.string.app_name) else "${getString(R.string.app_name)}  ·  $t"
     }
 
     private fun updatePin() {
@@ -148,19 +177,20 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun open(intent: android.content.Intent) {
+    private fun open(intent: Intent) {
         try {
             startActivity(intent)
         } catch (_: ActivityNotFoundException) {
         }
     }
 
-    private fun setupEdgeToEdge() {
+    private fun setupWindow() {
         if (Build.VERSION.SDK_INT < 30) return
+        @Suppress("DEPRECATION")
         window.setDecorFitsSystemWindows(false)
-        val night = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        // Light icons: they sit on the dimmed wallpaper.
         val light = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-        window.insetsController?.setSystemBarsAppearance(if (night) 0 else light, light)
+        window.insetsController?.setSystemBarsAppearance(0, light)
         val root = findViewById<View>(R.id.root)
         root.setOnApplyWindowInsetsListener { v, insets ->
             val bars = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())

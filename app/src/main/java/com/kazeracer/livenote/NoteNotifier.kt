@@ -16,6 +16,10 @@ object NoteNotifier {
     private const val CHANNEL = "note"
     private const val ID = 1
 
+    // Rough rows the expanded notification can show before the system cuts it.
+    private const val BUDGET_ROWS = 8
+    private const val BUDGET_ROWS_WITH_ACTIONS = 6
+
     // Android 16 "Live Updates" (promoted ongoing notifications). Used through their
     // raw names / reflection so the app also builds and runs on older platforms.
     private const val EXTRA_REQUEST_PROMOTED_ONGOING = "android.requestPromotedOngoing"
@@ -29,7 +33,7 @@ object NoteNotifier {
             return
         }
         ensureChannel(context)
-        nm.notify(ID, build(context, store.title, store.body))
+        nm.notify(ID, build(context, store.title, store.body, store.collapsed))
     }
 
     fun canNotify(context: Context): Boolean {
@@ -75,9 +79,11 @@ object NoteNotifier {
         nm.createNotificationChannel(ch)
     }
 
-    private fun build(context: Context, rawTitle: String, body: String): Notification {
+    private fun build(context: Context, rawTitle: String, body: String, collapsed: Set<Int>): Notification {
         val title = rawTitle.trim().ifEmpty { context.getString(R.string.title_hint) }
-        val rendered = Markdown.toNotification(body)
+        // Up to 3 buttons that tick the next open to-dos, right from the shade.
+        val todos = MarkdownCore.openTodos(body, collapsed).take(3)
+        val rendered = Markdown.toNotification(body, collapsed, if (todos.isEmpty()) BUDGET_ROWS else BUDGET_ROWS_WITH_ACTIONS)
         val firstLine = Markdown.firstLine(body)
 
         val open = PendingIntent.getActivity(
@@ -113,6 +119,19 @@ object NoteNotifier {
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setPublicVersion(public)
             .setColorized(false)
+
+        for ((i, t) in todos.withIndex()) {
+            val pi = PendingIntent.getBroadcast(
+                context, 100 + i,
+                Intent(context, RepostReceiver::class.java)
+                    .setAction(RepostReceiver.ACTION_CHECK)
+                    .putExtra(RepostReceiver.EXTRA_LINE, t.line)
+                    .putExtra(RepostReceiver.EXTRA_TEXT, t.text),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+            val label = "☐ " + if (t.text.length > 18) t.text.take(17) + "…" else t.text
+            b.addAction(Notification.Action.Builder(null as android.graphics.drawable.Icon?, label, pi).build())
+        }
 
         if (Build.VERSION.SDK_INT >= 36) {
             // Short text for the status-bar / AOD chip of a Live Update.

@@ -9,4 +9,5 @@
     <color name="code_text">#EB5757</color>
     <color name="accent">#2383E2</color>
     <color name="banner_bg">#FBF3DB</color>
+    <color name="scrim">#40000000</color>
 </resources>

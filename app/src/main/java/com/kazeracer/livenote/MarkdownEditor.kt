@@ -23,7 +23,7 @@ import android.text.style.TypefaceSpan
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.EditText
-import com.kazeracer.livenote.Markdown.Kind
+import com.kazeracer.livenote.MarkdownCore.Kind
 
 /**
  * A plain EditText that styles markdown as you type, Notion style:
@@ -78,15 +78,47 @@ class MarkdownEditor @JvmOverloads constructor(
 
     // ------------------------------------------------------------------ public
 
-    fun setMarkdown(md: String) {
+    /** @param closed line indices (in [md]) of toggles to show closed */
+    fun setMarkdown(md: String, closed: Set<Int> = emptySet()) {
         busy = true
-        collapsed.clear()
-        setText(md)
-        restyle(text)
-        busy = false
+        try {
+            collapsed.clear()
+            setText(md)
+            val e = text
+            // Bottom-up, so collapsing a toggle never shifts the lines still to process.
+            for (idx in closed.sortedDescending()) {
+                var ls = 0
+                var n = 0
+                while (n < idx && ls < e.length) {
+                    ls = lineEnd(e, ls) + 1
+                    n++
+                }
+                if (n != idx || ls > e.length) continue
+                val b = MarkdownCore.parse(e.subSequence(ls, lineEnd(e, ls)))
+                if (b.kind == Kind.TOGGLE && collapsedAt(e, ls) == null) toggleAt(e, ls, b)
+            }
+            restyle(e)
+        } finally {
+            busy = false
+        }
     }
 
     fun getMarkdown(): String = expandedText(text, 0, text.length)
+
+    /** Line indices, in [getMarkdown], of the toggles that are closed. */
+    fun getCollapsedLines(): Set<Int> {
+        val e = text
+        val out = HashSet<Int>()
+        var hiddenLines = 0
+        for (c in e.getSpans(0, e.length, Collapsed::class.java).sortedBy { e.getSpanStart(it) }) {
+            val s = e.getSpanStart(c)
+            var visible = 0
+            for (i in 0 until s) if (e[i] == '\n') visible++
+            out.add(visible + hiddenLines)
+            hiddenLines += c.hidden.count { it == '\n' }
+        }
+        return out
+    }
 
     // ------------------------------------------------------------------ lines
 
@@ -108,7 +140,7 @@ class MarkdownEditor @JvmOverloads constructor(
         if (nl >= e.length || e[nl] != '\n') return
         val ps = lineStart(e, nl)
         val prev = e.subSequence(ps, nl).toString()
-        val b = Markdown.parse(prev)
+        val b = MarkdownCore.parse(prev)
         val content = prev.substring(b.markerEnd)
         val nextLineRest = e.subSequence(nl + 1, lineEnd(e, nl + 1)).toString()
         val indent = prev.substring(0, b.indent)
@@ -168,7 +200,7 @@ class MarkdownEditor @JvmOverloads constructor(
         return sb.toString()
     }
 
-    private fun toggleAt(e: Editable, ls: Int, b: Markdown.Block) {
+    private fun toggleAt(e: Editable, ls: Int, b: MarkdownCore.Block) {
         val existing = collapsedAt(e, ls)
         if (existing != null) {
             expand(e, existing)
@@ -181,14 +213,14 @@ class MarkdownEditor @JvmOverloads constructor(
             val ns = end + 1
             val ne = lineEnd(e, ns)
             val line = e.subSequence(ns, ne)
-            if (line.isEmpty() || Markdown.parse(line).depth(line) <= depth) break
+            if (line.isEmpty() || MarkdownCore.parse(line).depth(line) <= depth) break
             end = ne
         }
         val hidden = expandedText(e, le, end)
         e.getSpans(le, end, Collapsed::class.java).forEach { e.removeSpan(it); collapsed.remove(it) }
         e.delete(le, end)
         val c = Collapsed(hidden).also { it.lastLineEnd = le }
-        e.setSpan(c, ls + b.indent, ls + b.indent + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        e.setSpan(c, ls + b.togglePos, ls + b.togglePos + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         collapsed.add(c)
     }
 
@@ -209,8 +241,8 @@ class MarkdownEditor @JvmOverloads constructor(
                 continue
             }
             val ls = lineStart(e, s)
-            val b = Markdown.parse(e.subSequence(ls, lineEnd(e, ls)))
-            if (b.kind != Kind.TOGGLE || ls + b.indent != s) expand(e, c)
+            val b = MarkdownCore.parse(e.subSequence(ls, lineEnd(e, ls)))
+            if (b.kind != Kind.TOGGLE || ls + b.togglePos != s) expand(e, c)
             else c.lastLineEnd = lineEnd(e, s)
         }
     }
@@ -225,7 +257,7 @@ class MarkdownEditor @JvmOverloads constructor(
         val line = l.getLineForVertical((y - totalPaddingTop + scrollY).toInt())
         val ls = l.getLineStart(line)
         if (ls > 0 && text[ls - 1] != '\n') return -1
-        val b = Markdown.parse(text.subSequence(ls, lineEnd(text, ls)))
+        val b = MarkdownCore.parse(text.subSequence(ls, lineEnd(text, ls)))
         if (b.kind != Kind.TODO && b.kind != Kind.TOGGLE) return -1
         val x0 = l.getPrimaryHorizontal(ls + b.indent)
         val x1 = l.getPrimaryHorizontal(ls + b.markerEnd)
@@ -254,7 +286,7 @@ class MarkdownEditor @JvmOverloads constructor(
 
     private fun activateMarker(ls: Int) {
         val e = text
-        val b = Markdown.parse(e.subSequence(ls, lineEnd(e, ls)))
+        val b = MarkdownCore.parse(e.subSequence(ls, lineEnd(e, ls)))
         when (b.kind) {
             Kind.TODO -> {
                 val br = e.indexOf("[", ls + b.indent)
@@ -400,7 +432,7 @@ class MarkdownEditor @JvmOverloads constructor(
 
     private fun styleLine(e: Editable, ls: Int, le: Int) {
         val line = e.subSequence(ls, le)
-        val b = Markdown.parse(line)
+        val b = MarkdownCore.parse(line)
         val ms = ls + b.indent
         val me = ls + b.markerEnd
         val depth = b.depth(line)
@@ -425,7 +457,13 @@ class MarkdownEditor @JvmOverloads constructor(
                     e.span(MdFg(cSecondary), me, le)
                 }
             }
-            Kind.TOGGLE -> e.span(Toggle(isCollapsedLine(e, ls)), ms, me)
+            Kind.TOGGLE -> {
+                e.span(Toggle(isCollapsedLine(e, ls)), ms, me)
+                if (b.level > 0) {
+                    e.span(MdStyle(Typeface.BOLD), ls, le)
+                    e.span(MdSize(floatArrayOf(1.875f, 1.5f, 1.25f)[b.level - 1]), ls, le)
+                }
+            }
             Kind.QUOTE -> {
                 e.span(Hidden(), ms, me)
                 e.span(QuoteBar(), ls, maxOf(le, ls + 1).coerceAtMost(e.length))
@@ -433,17 +471,17 @@ class MarkdownEditor @JvmOverloads constructor(
             Kind.NUMBER, Kind.TEXT -> {}
         }
 
-        for (r in Markdown.inlines(line.subSequence(b.markerEnd, line.length))) {
+        for (r in MarkdownCore.inlines(line.subSequence(b.markerEnd, line.length))) {
             val o = me
             e.span(MdFg(cFaint), o + r.start, o + r.cStart)
             e.span(MdFg(cFaint), o + r.cEnd, o + r.end)
             val cs = o + r.cStart
             val ce = o + r.cEnd
             when (r.kind) {
-                Markdown.InlineKind.BOLD -> e.span(MdStyle(Typeface.BOLD), cs, ce)
-                Markdown.InlineKind.ITALIC -> e.span(MdStyle(Typeface.ITALIC), cs, ce)
-                Markdown.InlineKind.STRIKE -> e.span(MdStrike(), cs, ce)
-                Markdown.InlineKind.CODE -> {
+                MarkdownCore.InlineKind.BOLD -> e.span(MdStyle(Typeface.BOLD), cs, ce)
+                MarkdownCore.InlineKind.ITALIC -> e.span(MdStyle(Typeface.ITALIC), cs, ce)
+                MarkdownCore.InlineKind.STRIKE -> e.span(MdStrike(), cs, ce)
+                MarkdownCore.InlineKind.CODE -> {
                     e.span(MdBg(cCodeBg), o + r.start, o + r.end)
                     e.span(MdMono(), o + r.start, o + r.end)
                     e.span(MdSize(0.9f), o + r.start, o + r.end)
