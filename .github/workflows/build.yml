@@ -117,11 +117,6 @@ jobs:
             sleep 4
             adb exec-out screencap -p > shots/2-notifications.png
             adb shell cmd statusbar collapse
-            adb shell input keyevent KEYCODE_SLEEP
-            sleep 3
-            adb shell input keyevent KEYCODE_WAKEUP
-            sleep 4
-            adb exec-out screencap -p > shots/3-lockscreen.png
             cat shots/tests.txt
             grep -q "^OK (" shots/tests.txt
 

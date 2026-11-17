@@ -55,6 +55,13 @@ class MarkdownCoreTest {
         assertEquals(2, all.size); assertEquals(0, none)
     }
 
+    @Test fun nonStringCharSequences() {
+        // The editor hands over Spannables, not Strings.
+        assertEquals(Kind.DIVIDER, MarkdownCore.parse(StringBuilder("---")).kind)
+        assertEquals(Kind.TOGGLE, MarkdownCore.parse(StringBuilder("## > T")).kind)
+        assertEquals(Kind.TODO, MarkdownCore.parse(StringBuilder("[x] T")).kind)
+    }
+
     @Test fun plainStripsMarkers() {
         assertEquals("ciao mondo", MarkdownCore.plain("## **ciao** _mondo_"))
     }

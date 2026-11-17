@@ -47,7 +47,8 @@ object MarkdownCore {
         var i = 0
         while (i < line.length && (line[i] == ' ' || line[i] == '\t')) i++
 
-        if (i == 0 && line.trim().let { it == "---" || it == "***" || it == "___" }) {
+        // toString(): the editor passes Spannables, which never equal a String.
+        if (i == 0 && line.toString().trim().let { it == "---" || it == "***" || it == "___" }) {
             return Block(Kind.DIVIDER, 0, line.length)
         }
 
